@@ -8,6 +8,10 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+result = "^0.13.1"
+loguru = "^0.7.2"
+httpx = {extras = ["http2"], version = "^0.25.0"}
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
