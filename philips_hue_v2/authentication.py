@@ -1,16 +1,9 @@
-from enum import IntEnum
 from typing import Any, TypedDict
 
 import httpx
 from result import Err, Ok, Result
 
-
-class HueErrorDetails(TypedDict):
-    """Client data."""
-
-    type: int
-    address: str
-    description: str
+from philips_hue_v2 import HueError, HueErrorDetails, OtherApiError
 
 
 class HueAuthenticationDetail(TypedDict):
@@ -20,20 +13,8 @@ class HueAuthenticationDetail(TypedDict):
     clientkey: str
 
 
-class HueError(IntEnum):
-    """Hue error codes."""
-
-    LINK_BUTTON_NOT_PRESSED = 101
-    PARAMETER_NOT_AVAILABLE = 6
-    INVALID_VALUE = 7
-
-
 class PressLinkButtonError(Exception):
     """Raised when the link button on the bridge has not been pressed."""
-
-
-class OtherApiError(Exception):
-    """Raised for any other errors in the API communication."""
 
 
 def get_access_token(

@@ -10,8 +10,9 @@ readme = "README.md"
 python = "^3.11"
 result = "^0.13.1"
 loguru = "^0.7.2"
-httpx = {extras = ["http2"], version = "^0.25.0"}
+httpx = { extras = ["http2"], version = "^0.25.0" }
 python-dotenv = "^1.0.0"
+pydantic = "^2.4.2"
 
 
 [tool.poetry.group.dev.dependencies]
