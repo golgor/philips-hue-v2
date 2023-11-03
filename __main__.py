@@ -1,9 +1,9 @@
-from dotenv import load_dotenv
+import os
 
-from philips_hue_v2.bridge import (
-    HueBridge,
-    get_access_token_from_bridge,
-)
+from dotenv import load_dotenv
+from loguru import logger
+
+from philips_hue_v2.bridge import HueBridge
 
 
 load_dotenv()  # take environment variables from .env.
@@ -11,12 +11,11 @@ load_dotenv()  # take environment variables from .env.
 
 def main() -> None:
     """Main entry point."""
-    bridge = HueBridge(ip_address="10.0.0.37")
-    bridge = get_access_token_from_bridge(bridge, "philips_hue_v2", "golgor")
-
-    # bridge_path = Path("bridge.json")
-    # bridge = load_bridge_from_file(bridge_path)
-    # print(bridge)
+    bridge = HueBridge(
+        ip_address="10.0.0.37",
+        client_key=os.getenv("CLIENT_KEY", ""),
+        user_name=os.getenv("USER_NAME", ""),
+    )
 
 
 if __name__ == "__main__":
