@@ -44,10 +44,6 @@ def get_resources(
         return Ok(resources)
 
 
-# https://ecb5fa197557.home/clip/v2/resource/light/3d719a7e-d47e-40d3-87e0-1bed496fa1a0
-# https://ecb5fa197557.home/clip/v2/resource/light/3d719a7e-d47e-40d3-87e0-1bed496fa1a0
-
-
 def put_resources(
     bridge: "HueBridge", body: dict[str, Any], endpoint: str
 ) -> Result[list[dict[str, Any]], Exception]:
