@@ -24,28 +24,28 @@ all:
 	@echo "make clean"
 	@echo "    Remove python artifacts and virtualenv"
 
-ci:
-	poetry install --with ci
+dev:
+	poetry install --with dev
 
 ruff:
 	${RUN} ruff check .
 
-lint: ci ruff
+lint: dev ruff
 	${RUN} mypy .
 
-check_style: ci
+check_style: dev
 	${RUN} ruff format --check --diff .
 
-style: ci
+style: dev
 	${RUN} ruff format .
 
 check: check_style lint test
 
-test: ci docker_up
+test: dev
 	${RUN} pytest .
 
 clean:
 	poetry env remove --all
 	find -type d | grep __pycache__ | xargs rm -rf
 	find -type d | grep .*_cache | xargs rm -rf
-	rm -rf *.eggs *.egg-info dist build docs/_build .cache .mypy_cache coverage/* .pytest_cache/ .ruff_cache/ report.html
+	rm -rf *.eggs *.egg-info dist build docs/_build .cache .mypy_cache coverage/* .pytest_cache/ .ruff_cache/
