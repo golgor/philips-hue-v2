@@ -1,5 +1,8 @@
+import json
 from enum import IntEnum
 from typing import TypedDict
+
+from loguru import logger
 
 
 class HueError(IntEnum):
@@ -20,3 +23,18 @@ class HueErrorDetails(TypedDict):
 
 class OtherApiError(Exception):
     """Raised for any other errors in the API communication."""
+
+    def __init__(self, resource: str, errors: list[dict[str, str]]) -> None:
+        """Initialize."""
+        self.errors = errors
+        for error in errors:
+            logger.error(
+                json.dumps({"resource": resource, "error": error["description"]})
+            )
+            super().__init__(
+                json.dumps({"resource": resource, "error": error["description"]})
+            )
+
+    def __str__(self) -> str:
+        """Return string representation."""
+        return json.dumps(self.errors)
