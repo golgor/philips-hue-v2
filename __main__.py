@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from philips_hue_v2.bridge import HueBridge
+from philips_hue_v2.lights import controller
 from philips_hue_v2.resource.network import Network
 from philips_hue_v2.resource.requests import get_resources
 
@@ -19,10 +20,13 @@ def main() -> None:
     )
     resources_response = get_resources(bridge)
     network = Network(resources=resources_response.unwrap())
-    network_lights = network.get_lights()
-    if not network_lights:
+    # pelare = network.get_light_by_id("3d719a7e-d47e-40d3-87e0-1bed496fa1a0")
+    pelare = network.get_light_by_name("pelare")
+
+    if not pelare:
         return
-    bridge.turn_off(lights=[network_lights[7]])
+
+    controller.turn_on(bridge=bridge, lights=[pelare])
 
 
 if __name__ == "__main__":

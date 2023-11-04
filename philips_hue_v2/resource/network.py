@@ -1,6 +1,6 @@
 from typing import Any
 
-from .lights import Lights
+from ..lights.lights import Lights
 
 
 class Network:
@@ -22,15 +22,32 @@ class Network:
         """
         self.lights = self.parse_lights(resources)
 
-    def get_lights(self) -> list[Lights] | None:
-        """Get a list of all lights."""
-        return self.lights
+    def get_light_by_id(self, light_id: str) -> Lights | None:
+        """Get a light by its id."""
+        if not self.lights:
+            return None
+
+        for light in self.lights:
+            if light.id == light_id:
+                return light
+        return None
+
+    def get_light_by_name(self, light_name: str) -> Lights | None:
+        """Get a light by its name.
+
+        This is not case sensitive.
+        """
+        if not self.lights:
+            return None
+
+        for light in self.lights:
+            if light.name.lower() == light_name.lower():
+                return light
+        return None
 
     @staticmethod
     def parse_lights(resources: list[dict[str, Any]]) -> list[Lights]:
         """Get a list of all lights among the resources."""
         return [
-            Lights(**resource)
-            for resource in resources
-            if resource["type"] == "light"
+            Lights(**resource) for resource in resources if resource["type"] == "light"
         ]
