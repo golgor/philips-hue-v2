@@ -1,7 +1,6 @@
 import os
 
 from dotenv import load_dotenv
-from loguru import logger
 
 from philips_hue_v2.bridge import HueBridge
 from philips_hue_v2.resource.network import Network
@@ -21,6 +20,8 @@ def main() -> None:
     resources_response = get_resources(bridge)
     network = Network(resources=resources_response.unwrap())
     network_lights = network.get_lights()
+    if not network_lights:
+        return
     bridge.turn_off(lights=[network_lights[7]])
 
 
