@@ -27,6 +27,7 @@ def main() -> None:
         return
 
     controller.turn_on(bridge=bridge, lights=[pelare])
+    controller.set_brightness(bridge=bridge, lights=[pelare], brightness=100)
 
 
 if __name__ == "__main__":
