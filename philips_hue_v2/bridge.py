@@ -4,7 +4,9 @@ from pathlib import Path
 from loguru import logger
 from pydantic import BaseModel
 
-from philips_hue_v2.authentication import get_access_token
+from .authentication import get_access_token
+from .resource.lights import Lights
+from .resource.requests import put_resources
 
 
 class HueBridge(BaseModel):
@@ -15,12 +17,19 @@ class HueBridge(BaseModel):
     ip_address: str
     path: Path = Path("bridge.json")
 
+    def turn_off(self, lights: list[Lights]) -> None:
+        """Turn off lights."""
+        for light in lights:
+            url = f"/light/{light.id}"
+            body = {"on": {"on": False}}
+            put_resources(bridge=self, endpoint=url, body=body)
 
-def load_bridge_from_file(filepath: Path) -> HueBridge:
-    """Load a bridge from a file."""
-    with filepath.open("r") as file:
-        bridge_model = json.load(file)
-        return HueBridge(**bridge_model)
+    def turn_on(self, lights: list[Lights]) -> None:
+        """Turn off lights."""
+        for light in lights:
+            url = f"/light/{light.id}"
+            body = {"on": {"on": True}}
+            put_resources(bridge=self, endpoint=url, body=body)
 
 
 def get_access_token_from_bridge(
