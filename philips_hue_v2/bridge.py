@@ -5,8 +5,6 @@ from loguru import logger
 from pydantic import BaseModel
 
 from .authentication import get_access_token
-from .resource.lights import Lights
-from .resource.requests import put_resources
 
 
 class HueBridge(BaseModel):
@@ -16,20 +14,6 @@ class HueBridge(BaseModel):
     user_name: str
     ip_address: str
     path: Path = Path("bridge.json")
-
-    def turn_off(self, lights: list[Lights]) -> None:
-        """Turn off lights."""
-        for light in lights:
-            url = f"/light/{light.id}"
-            body = {"on": {"on": False}}
-            put_resources(bridge=self, endpoint=url, body=body)
-
-    def turn_on(self, lights: list[Lights]) -> None:
-        """Turn off lights."""
-        for light in lights:
-            url = f"/light/{light.id}"
-            body = {"on": {"on": True}}
-            put_resources(bridge=self, endpoint=url, body=body)
 
 
 def get_access_token_from_bridge(
