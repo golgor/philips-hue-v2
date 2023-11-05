@@ -1,3 +1,5 @@
+import pickle
+from pathlib import Path
 from typing import Any
 
 from ..bridge import HueBridge
@@ -51,3 +53,11 @@ class Network:
     def parse_lights(self, resources: list[dict[str, Any]]) -> list[Lights]:
         """Get a list of all lights among the resources."""
         return [Lights(bridge=self.bridge, **resource) for resource in resources if resource["type"] == "light"]
+
+
+def pickle_network(network: Network, path: Path = Path("network.pkl")) -> None:
+    pickle.dump(network, path.open("wb"))
+
+
+def unpickle_network(path: Path = Path("network.pkl")) -> Network:
+    return pickle.load(path.open("rb"))
