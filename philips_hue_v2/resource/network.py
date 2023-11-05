@@ -1,5 +1,6 @@
 from typing import Any
 
+from ..bridge import HueBridge
 from ..lights.lights import Lights
 
 
@@ -11,7 +12,7 @@ class Network:
 
     lights: list[Lights] | None = None
 
-    def __init__(self, resources: list[dict[str, Any]]) -> None:
+    def __init__(self, resources: list[dict[str, Any]], bridge: HueBridge) -> None:
         """Initialize the network class.
 
         This might very well be replaced by functions.
@@ -20,6 +21,7 @@ class Network:
             resources (list[dict[str, Any]]): A list of resources from the bridge. Typically the raw response from
                 calling the /resource-endpoint.
         """
+        self.bridge = bridge
         self.lights = self.parse_lights(resources)
 
     def get_light_by_id(self, light_id: str) -> Lights | None:
@@ -45,9 +47,10 @@ class Network:
                 return light
         return None
 
-    @staticmethod
-    def parse_lights(resources: list[dict[str, Any]]) -> list[Lights]:
+    def parse_lights(self, resources: list[dict[str, Any]]) -> list[Lights]:
         """Get a list of all lights among the resources."""
         return [
-            Lights(**resource) for resource in resources if resource["type"] == "light"
+            Lights(bridge=self.bridge, **resource)
+            for resource in resources
+            if resource["type"] == "light"
         ]

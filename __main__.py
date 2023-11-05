@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 
 from philips_hue_v2.bridge import HueBridge
-from philips_hue_v2.lights import controller
 from philips_hue_v2.resource.network import Network
 from philips_hue_v2.resource.requests import get_resources
 
@@ -19,15 +18,16 @@ def main() -> None:
         user_name=os.getenv("USER_NAME", ""),
     )
     resources_response = get_resources(bridge)
-    network = Network(resources=resources_response.unwrap())
-    # pelare = network.get_light_by_id("3d719a7e-d47e-40d3-87e0-1bed496fa1a0")
-    pelare = network.get_light_by_name("pelare")
+    network = Network(resources=resources_response.unwrap(), bridge=bridge)
+    bibblan = network.get_light_by_id("23e8c74f-7c0e-40ae-b61d-f10df2f165be")
+    # bibblan = network.get_light_by_name("pelare")
 
-    if not pelare:
+    if not bibblan:
         return
 
-    controller.turn_on(bridge=bridge, lights=[pelare])
-    controller.set_brightness(bridge=bridge, lights=[pelare], brightness=100)
+    bibblan.turn_on()
+    # bibblan.set_brightness(brightness=100)
+    bibblan.set_rgb_color({"red": 100, "green": 0, "blue": 100})
 
 
 if __name__ == "__main__":

@@ -1,10 +1,12 @@
 import json
 from pathlib import Path
+from typing import Any
 
 from loguru import logger
 from pydantic import BaseModel
 
 from .authentication import get_access_token
+from .resource.requests import put_resources
 
 
 class HueBridge(BaseModel):
@@ -14,6 +16,13 @@ class HueBridge(BaseModel):
     user_name: str
     ip_address: str
     path: Path = Path("bridge.json")
+
+    def update_resource(self, body: dict[str, Any], endpoint: str) -> None:
+        put_resources(
+            bridge=self,
+            body=body,
+            endpoint=endpoint,
+        )
 
 
 def get_access_token_from_bridge(

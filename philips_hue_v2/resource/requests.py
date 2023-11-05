@@ -1,11 +1,9 @@
 from typing import TYPE_CHECKING, Any, TypedDict
 
 import httpx
-from loguru import logger
 from result import Err, Ok, Result
 
 from .. import OtherApiError
-from .network import Lights
 
 
 if TYPE_CHECKING:
@@ -86,18 +84,3 @@ def put_resources(
         return Err(err)
     else:
         return Ok(resources)
-
-
-def get_lights(bridge: "HueBridge") -> list[Lights] | None:
-    """Function to get all lights from the bridge."""
-    response = get_resources(endpoint="/light", bridge=bridge)
-
-    if response.is_ok():
-        return [
-            Lights(**resource)
-            for resource in response.unwrap()
-            if resource["type"] == "light"
-        ]
-
-    logger.error(response.unwrap_err())
-    return None
