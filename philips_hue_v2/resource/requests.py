@@ -20,9 +20,7 @@ class ResponseObject(TypedDict):
 MULTI_VALUE_STATUS = 207
 
 
-def get_resources(
-    bridge: "HueBridge", endpoint: str = ""
-) -> Result[list[dict[str, Any]], Exception]:
+def get_resources(bridge: "HueBridge", endpoint: str = "") -> Result[list[dict[str, Any]], Exception]:
     """General function to get resources from the bridge.
 
     Used to abstract away the httpx.get() and authentication.
@@ -50,9 +48,7 @@ def get_resources(
         return Ok(resources)
 
 
-def put_resources(
-    bridge: "HueBridge", body: dict[str, Any], endpoint: str
-) -> Result[list[dict[str, Any]], Exception]:
+def put_resources(bridge: "HueBridge", body: dict[str, Any], endpoint: str) -> Result[list[dict[str, Any]], Exception]:
     """General function to put (update) resources from the bridge.
 
     Used to abstract away the httpx.put() and authentication. In some cases a 207 is raised, which means a multi-value

@@ -18,6 +18,7 @@ class HueBridge(BaseModel):
     path: Path = Path("bridge.json")
 
     def update_resource(self, body: dict[str, Any], endpoint: str) -> None:
+        """Wrapper function used to update a resource connect to the bridge."""
         put_resources(
             bridge=self,
             body=body,
@@ -25,9 +26,7 @@ class HueBridge(BaseModel):
         )
 
 
-def get_access_token_from_bridge(
-    ip_address: str, app_name: str, instance_name: str
-) -> None:
+def get_access_token_from_bridge(ip_address: str, app_name: str, instance_name: str) -> None:
     """Wrapper function for getting access token from a bridge.
 
     It outputs the result to the console.
@@ -39,8 +38,6 @@ def get_access_token_from_bridge(
     )
     if result.is_ok():
         data = result.unwrap()
-        logger.info(
-            f"Successfully got data from HueBridge!\n{json.dumps(data, indent=4)}"
-        )
+        logger.info(f"Successfully got data from HueBridge!\n{json.dumps(data, indent=4)}")
         return
     logger.error(result.unwrap_err())

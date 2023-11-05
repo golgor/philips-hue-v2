@@ -20,14 +20,12 @@ def main() -> None:
     resources_response = get_resources(bridge)
     network = Network(resources=resources_response.unwrap(), bridge=bridge)
     bibblan = network.get_light_by_id("23e8c74f-7c0e-40ae-b61d-f10df2f165be")
-    # bibblan = network.get_light_by_name("pelare")
 
     if not bibblan:
         return
 
     bibblan.turn_on()
-    # bibblan.set_brightness(brightness=100)
-    bibblan.set_rgb_color({"red": 100, "green": 0, "blue": 100})
+    bibblan.set_rgb_color({"red": 255, "green": 255, "blue": 255})
 
 
 if __name__ == "__main__":

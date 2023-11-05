@@ -20,6 +20,7 @@ class Network:
         Args:
             resources (list[dict[str, Any]]): A list of resources from the bridge. Typically the raw response from
                 calling the /resource-endpoint.
+            bridge (HueBridge): A bridge object that will be used to communicate with the resources.
         """
         self.bridge = bridge
         self.lights = self.parse_lights(resources)
@@ -49,8 +50,4 @@ class Network:
 
     def parse_lights(self, resources: list[dict[str, Any]]) -> list[Lights]:
         """Get a list of all lights among the resources."""
-        return [
-            Lights(bridge=self.bridge, **resource)
-            for resource in resources
-            if resource["type"] == "light"
-        ]
+        return [Lights(bridge=self.bridge, **resource) for resource in resources if resource["type"] == "light"]

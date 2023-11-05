@@ -28,12 +28,8 @@ class OtherApiError(Exception):
         """Initialize."""
         self.errors = errors
         for error in errors:
-            logger.error(
-                json.dumps({"resource": resource, "error": error["description"]})
-            )
-            super().__init__(
-                json.dumps({"resource": resource, "error": error["description"]})
-            )
+            logger.error(json.dumps({"resource": resource, "error": error["description"]}))
+            super().__init__(json.dumps({"resource": resource, "error": error["description"]}))
 
     def __str__(self) -> str:
         """Return string representation."""

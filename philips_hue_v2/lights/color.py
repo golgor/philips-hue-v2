@@ -5,6 +5,8 @@ http://www.developers.meethue.com/documentation/color-conversions-rgb-xy
 Copyright (c) 2016 Benjamin Knight / MIT License.
 
 https://github.com/benknight/hue-python-rgb-converter/
+
+A lot of noqa is used here, primarily to adhere to the standard naming used in the CIE1931 standard.
 """
 import math
 import random
@@ -94,7 +96,16 @@ def get_light_gamut_for_model(model_id: str) -> Gamut:
 
 
 class ColorHelper:
+    """Class with a lot of helper function to convert colors between RGB and CIE1931."""
+
     def __init__(self, gamut: Gamut = GamutB) -> None:
+        """Initialize the ColorHelper class.
+
+        Setting the different components of the Gamut.
+
+        Args:
+            gamut (Gamut, optional): The selected Gamut. Defaults to GamutB.
+        """
         self.red = gamut[0]
         self.lime = gamut[1]
         self.blue = gamut[2]
@@ -123,11 +134,11 @@ class ColorHelper:
         """Return a random Integer in the range of 0 to 255, representing an RGB color value."""
         return random.randrange(0, 256)  # noqa: S311
 
-    def cross_product(self, p1: XYPoint, p2: XYPoint):
+    def cross_product(self, p1: XYPoint, p2: XYPoint) -> float:
         """Returns the cross product of two XYPoints."""
         return p1.x * p2.y - p1.y * p2.x
 
-    def check_point_in_lamps_reach(self, p: XYPoint):
+    def check_point_in_lamps_reach(self, p: XYPoint) -> bool:
         """Check if the provided XYPoint can be recreated by a Hue lamp."""
         v1 = XYPoint(self.lime.x - self.red.x, self.lime.y - self.red.y)
         v2 = XYPoint(self.blue.x - self.red.x, self.blue.y - self.red.y)
@@ -136,33 +147,55 @@ class ColorHelper:
         s = self.cross_product(q, v2) / self.cross_product(v1, v2)
         t = self.cross_product(v1, q) / self.cross_product(v1, v2)
 
-        return (s >= 0.0) and (t >= 0.0) and (s + t <= 1.0)
+        return (s >= 0.0) and (t >= 0.0) and (s + t <= 1.0)  # noqa: PLR2004
 
-    def get_closest_point_to_line(self, A: XYPoint, B: XYPoint, P: XYPoint) -> XYPoint:
+    def get_closest_point_to_line(
+        self,
+        A: XYPoint,  # noqa: N803
+        B: XYPoint,  # noqa: N803
+        P: XYPoint,  # noqa: N803
+    ) -> XYPoint:
         """Find the closest point on a line. This point will be reproducible by a Hue lamp."""
-        AP = XYPoint(P.x - A.x, P.y - A.y)
-        AB = XYPoint(B.x - A.x, B.y - A.y)
+        AP = XYPoint(P.x - A.x, P.y - A.y)  # noqa: N806
+        AB = XYPoint(B.x - A.x, B.y - A.y)  # noqa: N806
         ab2 = AB.x * AB.x + AB.y * AB.y
         ap_ab = AP.x * AB.x + AP.y * AB.y
         t = ap_ab / ab2
 
-        if t < 0.0:
+        if t < 0.0:  # noqa: PLR2004
             t = 0.0
-        elif t > 1.0:
+        elif t > 1.0:  # noqa: PLR2004
             t = 1.0
 
         return XYPoint(A.x + AB.x * t, A.y + AB.y * t)
 
-    def get_closest_point_to_point(self, xy_point: XYPoint):
-        # Color is unreproducible, find the closest point on each line in the CIE 1931 'triangle'.
-        pAB = self.get_closest_point_to_line(self.red, self.lime, xy_point)
-        pAC = self.get_closest_point_to_line(self.blue, self.red, xy_point)
-        pBC = self.get_closest_point_to_line(self.lime, self.blue, xy_point)
+    def get_closest_point_to_point(self, xy_point: XYPoint) -> XYPoint:
+        """Find the closest point on each line in the CIE 1931 'triangle'.
+
+        If a color is not reproduceable by the lamp, find the closest point on each line in the CIE 1931 'triangle'.
+        First it calculates the closest points to each of the Gamut lines, it then calculates the distances. It then
+        returns the point which is closest.
+
+        Args:
+            xy_point (XYPoint): A XYPoint object corresponding to the color to convert.
+
+        Returns:
+            (XYPoint): The closest point on the CIE1931 triangle the lamp can reproduce.
+        """
+        pAB = self.get_closest_point_to_line(  # noqa: N806
+            self.red, self.lime, xy_point
+        )
+        pAC = self.get_closest_point_to_line(  # noqa: N806
+            self.blue, self.red, xy_point
+        )
+        pBC = self.get_closest_point_to_line(  # noqa: N806
+            self.lime, self.blue, xy_point
+        )
 
         # Get the distances per point and see which point is closer to our Point.
-        dAB = self.get_distance_between_two_points(xy_point, pAB)
-        dAC = self.get_distance_between_two_points(xy_point, pAC)
-        dBC = self.get_distance_between_two_points(xy_point, pBC)
+        dAB = self.get_distance_between_two_points(xy_point, pAB)  # noqa: N806
+        dAC = self.get_distance_between_two_points(xy_point, pAC)  # noqa: N806
+        dBC = self.get_distance_between_two_points(xy_point, pBC)  # noqa: N806
 
         lowest = dAB
         closest_point = pAB
@@ -181,33 +214,37 @@ class ColorHelper:
 
         return XYPoint(cx, cy)
 
-    def get_distance_between_two_points(self, one: XYPoint, two: XYPoint):
+    def get_distance_between_two_points(self, one: XYPoint, two: XYPoint) -> float:
         """Returns the distance between two XYPoints."""
         dx = one.x - two.x
         dy = one.y - two.y
         return math.sqrt(dx * dx + dy * dy)
 
-    def get_xy_point_from_rgb(self, red_i: int, green_i: int, blue_i: int):
+    def get_xy_point_from_rgb(self, red_i: int, green_i: int, blue_i: int) -> XYPoint:
         """Get XYPoint representing the closest available CIE 1931 coordinates based on the RGB input values."""
         red = red_i / 255.0
         green = green_i / 255.0
         blue = blue_i / 255.0
 
-        r = ((red + 0.055) / (1.0 + 0.055)) ** 2.4 if (red > 0.04045) else (red / 12.92)
+        r = (
+            ((red + 0.055) / (1.0 + 0.055)) ** 2.4
+            if (red > 0.04045)  # noqa: PLR2004
+            else (red / 12.92)
+        )
         g = (
             ((green + 0.055) / (1.0 + 0.055)) ** 2.4
-            if (green > 0.04045)
+            if (green > 0.04045)  # noqa: PLR2004
             else (green / 12.92)
         )
         b = (
             ((blue + 0.055) / (1.0 + 0.055)) ** 2.4
-            if (blue > 0.04045)
+            if (blue > 0.04045)  # noqa: PLR2004
             else (blue / 12.92)
         )
 
-        X = r * 0.664511 + g * 0.154324 + b * 0.162028
-        Y = r * 0.283881 + g * 0.668433 + b * 0.047685
-        Z = r * 0.000088 + g * 0.072310 + b * 0.986039
+        X = r * 0.664511 + g * 0.154324 + b * 0.162028  # noqa: N806
+        Y = r * 0.283881 + g * 0.668433 + b * 0.047685  # noqa: N806
+        Z = r * 0.000088 + g * 0.072310 + b * 0.986039  # noqa: N806
 
         cx = X / (X + Y + Z)
         cy = Y / (X + Y + Z)
@@ -221,7 +258,7 @@ class ColorHelper:
 
         return xy_point
 
-    def get_rgb_from_xy_and_brightness(self, x: float, y: float, bri=1):
+    def get_rgb_from_xy_and_brightness(self, x: float, y: float, bri: int = 1) -> tuple[int, int, int]:
         """Inverse of `get_xy_point_from_rgb`.
 
         Returns (r, g, b) for given x, y values. Implementation of the instructions found on the
@@ -240,9 +277,9 @@ class ColorHelper:
             xy_point = self.get_closest_point_to_point(xy_point)
 
         # Calculate XYZ values Convert using the following formulas:
-        Y = bri
-        X = (Y / xy_point.y) * xy_point.x
-        Z = (Y / xy_point.y) * (1 - xy_point.x - xy_point.y)
+        Y = bri  # noqa: N806
+        X = (Y / xy_point.y) * xy_point.x  # noqa: N806
+        Z = (Y / xy_point.y) * (1 - xy_point.x - xy_point.y)  # noqa: N806
 
         # Convert to RGB using Wide RGB D65 conversion
         r = X * 1.656492 - Y * 0.354851 - Z * 0.255038
@@ -252,7 +289,7 @@ class ColorHelper:
         # Apply reverse gamma correction
         r, g, b = (
             (12.92 * x)
-            if (x <= 0.0031308)
+            if (x <= 0.0031308)  # noqa: PLR2004
             else ((1.0 + 0.055) * pow(x, (1.0 / 2.4)) - 0.055)
             for x in [r, g, b]
         )
@@ -278,35 +315,29 @@ class Converter:
         """Initialize a Converter object."""
         self.color = ColorHelper(gamut)
 
-    def hex_to_xy(self, h: str):
+    def hex_to_xy(self, h: str) -> tuple[float, float]:
         """Converts hexadecimal colors represented as a String to approximate CIE 1931 x and y coordinates."""
         rgb = self.color.hex_to_rgb(h)
         return self.rgb_to_xy(rgb[0], rgb[1], rgb[2])
 
-    def rgb_to_xy(self, red: int, green: int, blue: int):
+    def rgb_to_xy(self, red: int, green: int, blue: int) -> tuple[float, float]:
         """Converts red, green and blue integer values to approximate CIE 1931 x and y coordinates."""
         point = self.color.get_xy_point_from_rgb(red, green, blue)
         return (point.x, point.y)
 
-    def xy_to_hex(self, x: float, y: float, bri: int = 1):
+    def xy_to_hex(self, x: float, y: float, bri: int = 1) -> str:
         """Converts CIE 1931 x and y coordinates and brightness value from 0 to 1 to a CSS hex color."""
         r, g, b = self.color.get_rgb_from_xy_and_brightness(x, y, bri)
         return self.color.rgb_to_hex(r, g, b)
 
-    def xy_to_rgb(self, x: float, y: float, bri: int = 1):
+    def xy_to_rgb(self, x: float, y: float, bri: int = 1) -> tuple[int, int, int]:
         """Converts CIE 1931 x and y coordinates and brightness value from 0 to 1 to a CSS hex color."""
         r, g, b = self.color.get_rgb_from_xy_and_brightness(x, y, bri)
         return (r, g, b)
 
-    def get_random_xy_color(self):
+    def get_random_xy_color(self) -> tuple[float, float]:
         """Returns the approximate CIE 1931 x,y coordinates by the supplied hexColor parameter or a random color."""
         r = self.color.random_rgb_value()
         g = self.color.random_rgb_value()
         b = self.color.random_rgb_value()
         return self.rgb_to_xy(r, g, b)
-
-
-if __name__ == "__main__":
-    converter = Converter(gamut=GamutC)
-    test = converter.rgb_to_xy(255, 0, 0)
-    print(test)
