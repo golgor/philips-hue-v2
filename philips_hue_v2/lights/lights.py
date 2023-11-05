@@ -102,7 +102,7 @@ class Lights(BaseModel):
         min_kelvin = 2000
         max_kelvin = 6500
 
-        if min_kelvin < kelvin < max_kelvin:
+        if min_kelvin < kelvin > max_kelvin:
             raise ValueError("The color temperature must be between 2000 and 6500.")
 
         mirek = 1_000_000 // kelvin
