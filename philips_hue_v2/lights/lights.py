@@ -62,3 +62,17 @@ class Lights(BaseModel):
         url = f"/light/{self.id}"
         body = {"dimming": {"brightness": brightness}}
         self.bridge.update_resource(body=body, endpoint=url)
+
+    def set_rgb_color(self, rgb: dict[str, int]):
+        """Set color.
+
+        The rgb values should be between 0 and 255 and will be converted to xy values.
+
+        Args:
+            rgb (dict[str, int]): A dict with the rgb-values. For example {"red": 255, "green": 0, "blue": 0}.
+        """
+        converter = Converter()
+        x, y = converter.rgb_to_xy(**rgb)
+        url = f"/light/{self.id}"
+        body = {"color": {"xy": {"x": x, "y": y}}}
+        self.bridge.update_resource(body=body, endpoint=url)
