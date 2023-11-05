@@ -18,11 +18,14 @@ def main() -> None:
         user_name=os.getenv("USER_NAME", ""),
     )
     resources_response = get_resources(bridge)
-    network = Network(resources=resources_response.unwrap())
-    network_lights = network.get_lights()
-    if not network_lights:
+    network = Network(resources=resources_response.unwrap(), bridge=bridge)
+    bibblan = network.get_light_by_id("23e8c74f-7c0e-40ae-b61d-f10df2f165be")
+
+    if not bibblan:
         return
-    bridge.turn_off(lights=[network_lights[7]])
+
+    bibblan.turn_on()
+    bibblan.set_rgb_color({"red": 255, "green": 255, "blue": 255})
 
 
 if __name__ == "__main__":

@@ -1,6 +1,7 @@
 from typing import Any
 
-from .lights import Lights
+from ..bridge import HueBridge
+from ..lights.lights import Lights
 
 
 class Network:
@@ -11,7 +12,7 @@ class Network:
 
     lights: list[Lights] | None = None
 
-    def __init__(self, resources: list[dict[str, Any]]) -> None:
+    def __init__(self, resources: list[dict[str, Any]], bridge: HueBridge) -> None:
         """Initialize the network class.
 
         This might very well be replaced by functions.
@@ -19,18 +20,34 @@ class Network:
         Args:
             resources (list[dict[str, Any]]): A list of resources from the bridge. Typically the raw response from
                 calling the /resource-endpoint.
+            bridge (HueBridge): A bridge object that will be used to communicate with the resources.
         """
+        self.bridge = bridge
         self.lights = self.parse_lights(resources)
 
-    def get_lights(self) -> list[Lights] | None:
-        """Get a list of all lights."""
-        return self.lights
+    def get_light_by_id(self, light_id: str) -> Lights | None:
+        """Get a light by its id."""
+        if not self.lights:
+            return None
 
-    @staticmethod
-    def parse_lights(resources: list[dict[str, Any]]) -> list[Lights]:
+        for light in self.lights:
+            if light.id == light_id:
+                return light
+        return None
+
+    def get_light_by_name(self, light_name: str) -> Lights | None:
+        """Get a light by its name.
+
+        This is not case sensitive.
+        """
+        if not self.lights:
+            return None
+
+        for light in self.lights:
+            if light.name.lower() == light_name.lower():
+                return light
+        return None
+
+    def parse_lights(self, resources: list[dict[str, Any]]) -> list[Lights]:
         """Get a list of all lights among the resources."""
-        return [
-            Lights(**resource)
-            for resource in resources
-            if resource["type"] == "light"
-        ]
+        return [Lights(bridge=self.bridge, **resource) for resource in resources if resource["type"] == "light"]

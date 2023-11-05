@@ -3,7 +3,11 @@ from typing import Any, TypedDict
 import httpx
 from result import Err, Ok, Result
 
-from philips_hue_v2 import HueError, HueErrorDetails, OtherApiError
+from philips_hue_v2 import HueError, HueErrorDetails
+
+
+class OtherAuthenticationError(Exception):
+    """Raised for any other errors in the authentication process."""
 
 
 class HueAuthenticationDetail(TypedDict):
@@ -17,9 +21,7 @@ class PressLinkButtonError(Exception):
     """Raised when the link button on the bridge has not been pressed."""
 
 
-def get_access_token(
-    ip_address: str, app_name: str, instance_name: str
-) -> Result[HueAuthenticationDetail, Exception]:
+def get_access_token(ip_address: str, app_name: str, instance_name: str) -> Result[HueAuthenticationDetail, Exception]:
     """Get access token from Philips Hue API.
 
     To get the access token, the link button on the bridge must be pressed before running this function. If not, an
@@ -53,9 +55,7 @@ def get_access_token(
             error: HueErrorDetails = response_data[0]["error"]
             if error["type"] == HueError.LINK_BUTTON_NOT_PRESSED:
                 return Err(PressLinkButtonError("Press link button on bridge"))
-            return Err(
-                OtherApiError(f"Error {error['type']}: {error['description']}")
-            )
+            return Err(OtherAuthenticationError(f"Error {error['type']}: {error['description']}"))
 
         client_data: HueAuthenticationDetail = response_data[0]["success"]
     except httpx.HTTPStatusError as err:
