@@ -89,3 +89,24 @@ class Lights(BaseModel):
         url = f"/light/{self.id}"
         body = {"color": {"xy": {"x": x, "y": y}}}
         self.bridge.update_resource(body=body, endpoint=url)
+
+    def set_color_temperature(self, kelvin: int) -> None:
+        """Set color temperature in Kelvin.
+
+        Philips Hue uses another unit called mirek, which is the reciprocal value of the color temperature in Kelvin.
+        The relationship between mirek and Kelvin is: mirek = 1 000 000 / kelvin.
+
+        Args:
+            kelvin (int): The color temperature in kelvin.
+        """
+        min_kelvin = 2000
+        max_kelvin = 6500
+
+        if min_kelvin < kelvin < max_kelvin:
+            raise ValueError("The color temperature must be between 2000 and 6500.")
+
+        mirek = 1_000_000 // kelvin
+
+        url = f"/light/{self.id}"
+        body = {"color_temperature": {"mirek": mirek}}
+        self.bridge.update_resource(body=body, endpoint=url)

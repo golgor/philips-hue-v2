@@ -19,7 +19,7 @@ def main_load_pickled_network() -> None:
         return
 
     bibblan.turn_on()
-    bibblan.set_rgb_color({"red": 255, "green": 255, "blue": 255})
+    bibblan.set_color_temperature(6500)
 
 
 def main() -> None:
@@ -43,4 +43,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    main_load_pickled_network()

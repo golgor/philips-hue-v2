@@ -56,8 +56,20 @@ class Network:
 
 
 def pickle_network(network: Network, path: Path = Path("network.pkl")) -> None:
+    """Pickle the network object.
+
+    This creates a .pkl-file that stores the current state of the Network object. This includes all the lights,
+    rooms and groups. Using this file will speed up the initialization of the Network object.
+    """
     pickle.dump(network, path.open("wb"))
 
 
 def unpickle_network(path: Path = Path("network.pkl")) -> Network:
-    return pickle.load(path.open("rb"))
+    """Unpickle a file to create a Network object.
+
+    This does introduce a security concern as the file might be tampered with. The risk is however low as the file is
+    supposed to be created by the application itself and not easily accessible. A security breach would only be possible
+    if the attacker has access to the file system, which would be a much bigger problem.
+    """
+    network: Network = pickle.load(path.open("rb"))  # noqa: S301
+    return network
