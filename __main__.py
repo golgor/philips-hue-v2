@@ -1,11 +1,9 @@
 import os
-from time import perf_counter
 
 from dotenv import load_dotenv
-from loguru import logger
 
 from philips_hue_v2.bridge import HueBridge
-from philips_hue_v2.resource.network import Network, pickle_network, unpickle_network
+from philips_hue_v2.resource.network import Network, unpickle_network
 from philips_hue_v2.resource.requests import get_resources
 
 
@@ -45,6 +43,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    start = perf_counter()
-    main_load_pickled_network()
-    logger.info(perf_counter() - start)
+    main()
