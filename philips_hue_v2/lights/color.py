@@ -7,6 +7,7 @@ Copyright (c) 2016 Benjamin Knight / MIT License.
 https://github.com/benknight/hue-python-rgb-converter/
 
 A lot of noqa is used here, primarily to adhere to the standard naming used in the CIE1931 standard.
+This might be migrated to the colour-package sometime: https://github.com/colour-science/colour
 """
 import math
 import random
