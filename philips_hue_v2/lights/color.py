@@ -49,7 +49,18 @@ GamutC = (
 )
 
 
-def get_light_gamut(model_id: str) -> Gamut:
+def get_gamut_from_str(gamut_str: str) -> Gamut:
+    """Gets the correct color gamut for the provided gamut string."""
+    if gamut_str == "A":
+        return GamutA
+    if gamut_str == "B":
+        return GamutB
+    if gamut_str == "C":
+        return GamutC
+    raise ValueError
+
+
+def get_light_gamut_for_model(model_id: str) -> Gamut:
     """Gets the correct color gamut for the provided model id.
 
     Docs: https://developers.meethue.com/develop/hue-api/supported-devices/
